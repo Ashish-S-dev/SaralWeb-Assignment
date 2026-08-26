@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.saralweb.assignment.SaralWeb.dto.PriorityQueueDto;
 import com.saralweb.assignment.SaralWeb.model.PriorityQueueItem;
 
+
 @Service
 public class PriorityQueueService {
 	
@@ -28,4 +29,51 @@ public class PriorityQueueService {
 		return topItem;
 		
 	}
+	
+
+    // Extract Min
+    public PriorityQueueItem extractMin() {
+        PriorityQueueItem item = priorityQueueDto.findTopByOrderByPriorityAsc()
+                .orElseThrow(() -> new RuntimeException("Priority Queue is empty"));
+
+        priorityQueueDto.delete(item);
+
+        return item;
+    }
+
+    // Extract Max
+    public PriorityQueueItem extractMax() {
+        PriorityQueueItem item = priorityQueueDto.findTopByOrderByPriorityDesc()
+                .orElseThrow(() -> new RuntimeException("Priority Queue is empty"));
+
+        priorityQueueDto.delete(item);
+
+        return item;
+    }
+
+    // Update
+    public PriorityQueueItem update(Long id, PriorityQueueItem updatedItem) {
+
+        PriorityQueueItem existingItem = priorityQueueDto.findById(id)
+                .orElseThrow(() -> new RuntimeException("Item not found with id: " + id));
+
+        existingItem.setValue(updatedItem.getValue());
+        existingItem.setPriority(updatedItem.getPriority());
+
+        return priorityQueueDto.save(existingItem);
+    }
+
+    // Delete
+    public void delete(Long id) {
+
+        PriorityQueueItem item = priorityQueueDto.findById(id)
+                .orElseThrow(() -> new RuntimeException("Item not found with id: " + id));
+
+        priorityQueueDto.delete(item);
+    }
+
+    // Is Empty
+    public boolean isEmpty() {
+        return priorityQueueDto.count() == 0;
+    }
 }
